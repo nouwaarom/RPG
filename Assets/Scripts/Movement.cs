@@ -47,6 +47,8 @@ public class Movement : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		_myTransform = transform;
+
         if (!isMobile) {
             return;
         }

@@ -10,11 +10,17 @@ public class EnemyAI : MonoBehaviour
 	public int rotationSpeed;
 	public float coolDown;
 
+    public AudioClip biteAudio;
+    public AudioClip roarAudio;
+
 	private float attackTimer;
 	private int maxDistance;
 	
 	private Transform myTransform;
-    private Animation animation;
+    private Animation animationComponent;
+
+    private AudioSource audioSource;
+    private Rigidbody myBody;
 	
 	void Awake()
 	{
@@ -24,8 +30,10 @@ public class EnemyAI : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+        myBody = GetComponent<Rigidbody>();
 		target = GameObject.FindGameObjectWithTag("Player");
-        animation = GetComponent<Animation>();
+        animationComponent = GetComponent<Animation>();
+        audioSource = gameObject.AddComponent<AudioSource>();
 		
 		maxDistance = Random.Range(20, 60);
 
@@ -45,9 +53,10 @@ public class EnemyAI : MonoBehaviour
 		else if (distance < 2) {
 			Attack();
 		} else if (distance < maxDistance) {
-			//move towards target
-			myTransform.position += myTransform.forward * moveSpeed * Time.deltaTime;
-            animation.CrossFade("Creep");
+            //move towards target
+            myBody.AddForce(myTransform.forward * moveSpeed);
+            
+            animationComponent.CrossFade("Creep");
 		}
     }
     
@@ -55,9 +64,11 @@ public class EnemyAI : MonoBehaviour
 	{
 		Vector3 dir = (target.transform.position - transform.position).normalized;
 		float direction = Vector3.Dot(dir, transform.forward);
+
+        audioSource.PlayOneShot(biteAudio);
 		
         if (direction > 0) {
-            animation.CrossFade("Shew");
+            animationComponent.CrossFade("Shew");
             PlayerHealth eh = (PlayerHealth)target.GetComponent("PlayerHealth");
             eh.AddjustCurrentHealth(-3);
 
