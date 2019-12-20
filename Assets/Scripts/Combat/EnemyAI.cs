@@ -53,8 +53,9 @@ public class EnemyAI : MonoBehaviour
 		else if (distance < 2) {
 			Attack();
 		} else if (distance < maxDistance) {
-            //move towards target
-            myBody.AddForce(myTransform.forward * moveSpeed);
+            // Correct for current velocity perpendicular to target velocity.
+            Vector3 correctedForward = myTransform.forward - (myBody.velocity.normalized * (Vector3.Dot(myBody.velocity.normalized, myTransform.forward)));
+            myBody.AddForce(correctedForward * moveSpeed);
             
             animationComponent.CrossFade("Creep");
 		}
